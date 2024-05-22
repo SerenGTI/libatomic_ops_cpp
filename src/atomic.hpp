@@ -76,9 +76,15 @@ public:
     template<typename TT1, typename TT2>
     auto exchange(std::pair<TT1, TT2> new_val, std::memory_order order) -> std::pair<T1, T2>
     {
+        return exchange(new_val.first, new_val.second, order);
+    }
+
+    template<typename TT1, typename TT2>
+    auto exchange(TT1 new_val1, TT2 new_val2, std::memory_order order) -> std::pair<T1, T2>
+    {
         auto val = load(order);
         while(true) {
-            if(compare_exchange_strong(val, new_val, order, std::memory_order_relaxed)){
+            if(compare_exchange_strong(val, new_val1, new_val2, order, std::memory_order_relaxed)){
                 return val;
             }
         }
