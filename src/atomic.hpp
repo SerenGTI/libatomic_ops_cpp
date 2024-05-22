@@ -74,6 +74,17 @@ public:
     }
 
     template<typename TT1, typename TT2>
+    auto exchange(std::pair<TT1, TT2> new_val, std::memory_order order) -> std::pair<T1, T2>
+    {
+        auto val = load(order);
+        while(true) {
+            if(compare_exchange_strong(val, new_val, order, std::memory_order_relaxed)){
+                return val;
+            }
+        }
+    }
+
+    template<typename TT1, typename TT2>
     auto compare_exchange_strong(T1& old_val1,
                                  T2& old_val2,
                                  TT1 new_val1,
@@ -184,12 +195,12 @@ public:
     auto store(TT&& val, std::memory_order order) -> void
     {
         switch(order) {
-        case std::memory_order_relaxed: AO_store(&value_, std::forward<TT>(val));
+        case std::memory_order_relaxed: AO_store(&value_, val);
         case std::memory_order_consume:
         case std::memory_order_acquire: assert(false && "acquire on store?!");
-        case std::memory_order_release: AO_store_release(&value_, std::forward<TT>(val));
+        case std::memory_order_release: AO_store_release(&value_, val);
         case std::memory_order_acq_rel:
-        case std::memory_order_seq_cst: AO_store_full(&value_, std::forward<TT>(val)); break;
+        case std::memory_order_seq_cst: AO_store_full(&value_, val); break;
         }
     }
 
