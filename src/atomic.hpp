@@ -34,8 +34,8 @@ public:
 
     datomic(const datomic&) = default;
     auto operator=(const datomic&) -> datomic& = default;
-    datomic(datomic&&) noexcept = default;
-    auto operator=(datomic&&) noexcept -> datomic& = default;
+    datomic(datomic&&) noexcept = delete;
+    auto operator=(datomic&&) noexcept -> datomic& = delete;
 
     auto load(std::memory_order order) const -> std::pair<T1, T2>
     {
@@ -44,10 +44,9 @@ public:
                 return to_pair(AO_double_load(&value_));
             case std::memory_order_consume:
             case std::memory_order_acquire:
-                return to_pair(AO_double_load_acquire(&value_));
             case std::memory_order_release:
-                assert(false && "release on load?!");
             case std::memory_order_acq_rel:
+                return to_pair(AO_double_load_acquire(&value_));
             case std::memory_order_seq_cst:
                 return to_pair(AO_double_load_full(&value_));
           break;
@@ -58,17 +57,27 @@ public:
     auto store(T1 val1, T2 val2, std::memory_order order) -> void
     {
         auto new_val = AO_double_t{};
-        new_val.AO_parts.AO_v1 = val1;
-        new_val.AO_parts.AO_v2 = val2;
+        if constexpr(std::is_pointer_v<T1>) {
+            new_val.AO_parts.AO_v1 = reinterpret_cast<AO_t>(val1);
+        }
+        else {
+            new_val.AO_parts.AO_v1 = val1;
+        }
+        if constexpr(std::is_pointer_v<T2>) {
+            new_val.AO_parts.AO_v2 = reinterpret_cast<AO_t>(val2);
+        }
+        else {
+            new_val.AO_parts.AO_v2 = val2;
+        }
+
         switch(order) {
             case std::memory_order_relaxed:
                 AO_double_store(&value_, new_val);
             case std::memory_order_consume:
             case std::memory_order_acquire:
-                assert(false && "acquire on store?!");
             case std::memory_order_release:
-                AO_double_store_release(&value_, new_val);
             case std::memory_order_acq_rel:
+                AO_double_store_release(&value_, new_val);
             case std::memory_order_seq_cst:
                 AO_double_store_full(&value_, new_val);
           break;
@@ -123,11 +132,19 @@ public:
             nv2 = static_cast<AO_t>(new_val2);
         }
 
+        if(success >= std::memory_order_acquire) {
+            AO_nop_read();
+        }
+
         if(success == std::memory_order_relaxed) {
             res = AO_compare_double_and_swap_double(&value_, ov1, ov2, nv1, nv2);
         }
         else {
             res = AO_compare_double_and_swap_double_full(&value_, ov1, ov2, nv1, nv2);
+        }
+
+        if(success >= std::memory_order_release) {
+            AO_nop_write();
         }
 
         if(res) {
