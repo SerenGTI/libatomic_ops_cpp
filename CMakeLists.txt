@@ -152,7 +152,7 @@ endif()
 add_library(atomic_ops ${SRC})
 target_link_libraries(atomic_ops PRIVATE ${THREADDLLIBS_LIST})
 target_include_directories(atomic_ops
-                PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
                 INTERFACE "$<INSTALL_INTERFACE:include>")
 
 if (enable_gpl)
@@ -212,7 +212,7 @@ install(TARGETS atomic_ops EXPORT Atomic_opsTargets
         INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 if (install_headers)
-  install(FILES src/atomic_ops.h
+  install(FILES src/atomic_ops.h src/atomic.hpp
           DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
   if (enable_gpl)
     install(FILES src/atomic_ops_malloc.h
