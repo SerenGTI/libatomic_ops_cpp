@@ -149,14 +149,14 @@ private:
             out.first = reinterpret_cast<T1>(value.AO_parts.AO_v1);
         }
         else {
-            out.first = value.AO_parts.AO_v1;
+            out.first = static_cast<T1>(value.AO_parts.AO_v1);
         }
 
         if constexpr(std::is_pointer_v<T2>) {
             out.second = reinterpret_cast<T1>(value.AO_parts.AO_v2);
         }
         else {
-            out.second = value.AO_parts.AO_v2;
+            out.second = static_cast<T2>(value.AO_parts.AO_v2);
         }
 
         return out;
