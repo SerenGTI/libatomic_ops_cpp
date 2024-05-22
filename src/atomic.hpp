@@ -153,7 +153,7 @@ private:
         }
 
         if constexpr(std::is_pointer_v<T2>) {
-            out.second = reinterpret_cast<T1>(value.AO_parts.AO_v2);
+            out.second = reinterpret_cast<T2>(value.AO_parts.AO_v2);
         }
         else {
             out.second = static_cast<T2>(value.AO_parts.AO_v2);
