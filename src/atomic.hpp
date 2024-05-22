@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../src/atomic_ops.h"
+#include "atomic_ops.h"
 #include <atomic>
 #include <utility>
 
