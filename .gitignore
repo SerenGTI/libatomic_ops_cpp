@@ -1,5 +1,7 @@
 # Ignored files in libatomic_ops Git repo.
 
+.cache/*
+
 Makefile
 
 /pkgconfig/atomic_ops.pc

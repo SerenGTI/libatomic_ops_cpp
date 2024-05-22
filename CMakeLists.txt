@@ -31,7 +31,7 @@ set(PACKAGE_VERSION 7.9.0)
 set(LIBATOMIC_OPS_VER_INFO      4:0:3)
 set(LIBATOMIC_OPS_GPL_VER_INFO  4:0:3)
 
-project(libatomic_ops C)
+project(libatomic_ops C CXX)
 
 if (POLICY CMP0057)
   # Required for CheckLinkerFlag, at least.
@@ -308,9 +308,9 @@ if (install_headers)
   set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
   string(REPLACE ";" " " THREADDLLIBS "${THREADDLLIBS_LIST}")
   # PACKAGE_VERSION is defined above.
-  configure_file(pkgconfig/atomic_ops.pc.in pkgconfig/atomic_ops.pc @ONLY)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/atomic_ops.pc"
-          DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+  # configure_file(pkgconfig/atomic_ops.pc.in pkgconfig/atomic_ops.pc @ONLY)
+  # install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/atomic_ops.pc"
+          # DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
   # TODO: handle atomic_ops-uninstalled.pc.in
 endif(install_headers)
 
@@ -378,3 +378,11 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/Atomic_opsConfig.cmake"
 
 export(EXPORT Atomic_opsTargets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/Atomic_opsTargets.cmake")
+
+
+
+
+# add_executable(sandbox src/sandbox.cpp)
+# target_include_directories(sandbox PRIVATE src include)
+# target_compile_options(sandbox PRIVATE -march=native)
+
