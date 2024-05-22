@@ -2,6 +2,7 @@
 
 #include "atomic_ops.h"
 #include <atomic>
+#include <type_traits>
 #include <utility>
 
 namespace ao {
@@ -13,8 +14,19 @@ public:
     datomic() = default;
     constexpr datomic(T1 val1, T2 val2) noexcept
     {
-        value_.AO_parts.AO_v1 = val1;
-        value_.AO_parts.AO_v2 = val2;
+        if constexpr(std::is_pointer_v<T1>) {
+            value_.AO_parts.AO_v1 = reinterpret_cast<AO_t>(val1);
+        }
+        else {
+            value_.AO_parts.AO_v1 = val1;
+        }
+
+        if constexpr(std::is_pointer_v<T2>) {
+            value_.AO_parts.AO_v2 = reinterpret_cast<AO_t>(val2);
+        }
+        else {
+            value_.AO_parts.AO_v2 = val2;
+        }
     }
     ~datomic() = default;
 
@@ -92,7 +104,22 @@ private:
 
     constexpr static auto to_pair(AO_double_t value) noexcept -> std::pair<T1, T2>
     {
-        return std::make_pair(value.AO_parts.AO_v1, value.AO_parts.AO_v2);
+        std::pair<T1, T2> out;
+        if constexpr(std::is_pointer_v<T1>) {
+            out.first = reinterpret_cast<T1>(value.AO_parts.AO_v1);
+        }
+        else {
+            out.first = value.AO_parts.AO_v1;
+        }
+
+        if constexpr(std::is_pointer_v<T2>) {
+            out.second = reinterpret_cast<T1>(value.AO_parts.AO_v2);
+        }
+        else {
+            out.second = value.AO_parts.AO_v2;
+        }
+
+        return out;
     }
 
 private:
