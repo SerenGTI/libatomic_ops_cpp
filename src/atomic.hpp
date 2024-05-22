@@ -11,6 +11,11 @@ class datomic
 {
 public:
     datomic() = default;
+    constexpr datomic(T1 val1, T2 val2) noexcept
+    {
+        value_.AO_parts.AO_v1 = val1;
+        value_.AO_parts.AO_v2 = val2;
+    }
     ~datomic() = default;
 
     datomic(const datomic&) = default;
