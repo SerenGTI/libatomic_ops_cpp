@@ -102,12 +102,32 @@ public:
         -> bool
     {
         auto res = 0;
-
-        if(success == std::memory_order_relaxed) {
-            res = AO_compare_double_and_swap_double(&value_, old_val1, old_val2, new_val1, new_val2);
+        AO_t ov1;
+        AO_t ov2;
+        AO_t nv1;
+        AO_t nv2;
+        if constexpr(std::is_pointer_v<T1>) {
+            ov1 = reinterpret_cast<AO_t>(old_val1);
+            nv1 = reinterpret_cast<AO_t>(new_val1);
         }
         else {
-            res = AO_compare_double_and_swap_double_full(&value_, old_val1, old_val2, new_val1, new_val2);
+            ov1 = static_cast<AO_t>(old_val1);
+            nv1 = static_cast<AO_t>(new_val1);
+        }
+        if constexpr(std::is_pointer_v<T2>) {
+            ov2 = reinterpret_cast<AO_t>(old_val2);
+            nv2 = reinterpret_cast<AO_t>(new_val2);
+        }
+        else {
+            ov2 = static_cast<AO_t>(old_val2);
+            nv2 = static_cast<AO_t>(new_val2);
+        }
+
+        if(success == std::memory_order_relaxed) {
+            res = AO_compare_double_and_swap_double(&value_, ov1, ov2, nv1, nv2);
+        }
+        else {
+            res = AO_compare_double_and_swap_double_full(&value_, ov1, ov2, nv1, nv2);
         }
 
         if(res) {
