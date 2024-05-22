@@ -11,6 +11,8 @@ template<typename T1, typename T2>
 class datomic
 {
 public:
+    using value_type = std::pair<T1, T2>;
+
     datomic() = default;
     constexpr datomic(T1 val1, T2 val2) noexcept
     {
