@@ -74,10 +74,10 @@ public:
     }
 
     template<typename TT1, typename TT2>
-    auto compare_exchange_strong(TT1& old_val1,
-                                 TT2& old_val2,
-                                 T1 new_val1,
-                                 T2 new_val2,
+    auto compare_exchange_strong(T1& old_val1,
+                                 T2& old_val2,
+                                 TT1 new_val1,
+                                 TT2 new_val2,
                                  std::memory_order success,
                                  std::memory_order failure = std::memory_order_relaxed) noexcept
         -> bool
@@ -99,6 +99,27 @@ public:
         old_val1 = load_on_failure.first;
         old_val2 = load_on_failure.second;
         return false;
+    }
+
+    template<typename TT1, typename TT2>
+    auto compare_exchange_strong(std::pair<T1, T2>& old_val,
+                                 TT1 new_val1,
+                                 TT2 new_val2,
+                                 std::memory_order success,
+                                 std::memory_order failure = std::memory_order_relaxed) noexcept
+        -> bool
+    {
+        return compare_exchange_strong(old_val.first, old_val.second, new_val1, new_val2, success, failure);
+    }
+
+    template<typename TT1, typename TT2>
+    auto compare_exchange_strong(std::pair<T1, T2>& old_val,
+                                 std::pair<TT1, TT2> new_val,
+                                 std::memory_order success,
+                                 std::memory_order failure = std::memory_order_relaxed) noexcept
+        -> bool
+    {
+        return compare_exchange_strong(old_val, new_val.first, new_val.second, success, failure);
     }
 private:
 
