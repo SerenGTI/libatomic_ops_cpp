@@ -152,7 +152,7 @@ endif()
 add_library(atomic_ops ${SRC})
 target_link_libraries(atomic_ops PRIVATE ${THREADDLLIBS_LIST})
 target_include_directories(atomic_ops
-                PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
+                PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include>"
                 INTERFACE "$<INSTALL_INTERFACE:include>")
 
 if (enable_gpl)
